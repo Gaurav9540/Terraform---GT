@@ -76,7 +76,10 @@ resource "aws_security_group" "private_sg" {
     from_port       = 22
     to_port         = 22
     protocol        = "tcp"
-    security_groups = [aws_security_group.bastion_sg.id]
+    security_groups = [
+        aws_security_group.bastion_sg.id,
+        aws_security_group.frontend_sg
+    ]
   }
 
   egress {
