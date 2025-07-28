@@ -92,6 +92,7 @@ resource "aws_security_group" "private_sg" {
 # Bastion Host EC2
 resource "aws_instance" "bastion" {
   ami                    = "ami-0f918f7e67a3323f0" 
+  instance_type          = "t2.micro"
   subnet_id              = aws_subnet.public_subnet.id
   associate_public_ip_address = true
   key_name               = var.key_name
