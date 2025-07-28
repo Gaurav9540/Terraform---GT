@@ -78,7 +78,7 @@ resource "aws_security_group" "private_sg" {
     protocol        = "tcp"
     security_groups = [
         aws_security_group.bastion_sg.id,
-        aws_security_group.frontend_sg
+        aws_security_group.frontend_sg.id
     ]
   }
 
