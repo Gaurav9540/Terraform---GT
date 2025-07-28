@@ -89,6 +89,42 @@ resource "aws_security_group" "private_sg" {
   tags = { Name = "private-sg" }
 }
 
+# Frontend Public EC2 SG
+resource "aws_security_group" "frontend_sg" {
+  name   = "frontend-sg"
+  vpc_id = aws_vpc.main.id
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = [var.my_ip]
+  }
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = { Name = "frontend-sg" }
+}
+
 # Bastion Host EC2
 resource "aws_instance" "bastion" {
   ami                    = "ami-0f918f7e67a3323f0" 
@@ -111,4 +147,16 @@ resource "aws_instance" "private_ec2" {
   vpc_security_group_ids = [aws_security_group.private_sg.id]
 
   tags = { Name = "private-ec2" }
+}
+
+# Frontend EC2 Instance (Public)
+resource "aws_instance" "frontend_ec2" {
+  ami                         = "ami-0f918f7e67a3323f0"
+  instance_type               = "t2.micro"
+  subnet_id                   = aws_subnet.public_subnet.id
+  associate_public_ip_address = true
+  key_name                    = var.key_name
+  vpc_security_group_ids      = [aws_security_group.frontend_sg.id]
+
+  tags = { Name = "frontend-ec2" }
 }
